@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.fields import CharField, TextField
 from django_mysql.models import ListCharField
+from django.contrib.auth import get_user_model
 
 
 
@@ -10,10 +11,10 @@ class User(AbstractUser):
 
 class Sleep(models.Model):
     date = models.DateTimeField(auto_now_add=True)
-    start_time = models.DateTimeField()
-    end_time = models.DateField()
-    total_time = models.IntegerField()
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    total_time = models.FloatField()
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '睡眠'
@@ -23,9 +24,9 @@ class Breakfast(models.Model):
     STATUS_CHOICES = [(1, '食べてない'),(2, '食べた')]
     date = models.DateTimeField(auto_now_add=True)
     menu = ListCharField(
-        models.CharField(max_length=100),size=6, max_length=(1000))
+        models.CharField(max_length=100,blank=True),size=6, max_length=(1000))
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '朝食'
@@ -34,11 +35,11 @@ class Breakfast(models.Model):
 class Cleaning(models.Model):
     STATUS_CHOICES = [(1, '掃除してない'),(2, '掃除した')]
     date = models.DateTimeField(auto_now_add=True)
-    time = models.IntegerField()
+    time = models.FloatField()
     place = ListCharField(
-        models.CharField(max_length=100),size=6, max_length=(1000))
+        models.CharField(max_length=100,blank=True),size=6, max_length=(1000))
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '掃除'
@@ -47,11 +48,11 @@ class Cleaning(models.Model):
 class Exercise(models.Model):
     STATUS_CHOICES = [(1, '運動してない'),(2, '運動した')]
     date = models.DateTimeField(auto_now_add=True)
-    time = models.IntegerField()
+    time = models.FloatField()
     genre = ListCharField(
-        models.CharField(max_length=100),size=6, max_length=(1000))
+        models.CharField(max_length=100,blank=True),size=6, max_length=(1000))
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '運動'
@@ -63,8 +64,12 @@ class Todo(models.Model):
     task = CharField(max_length=250)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     finish_task  = ListCharField(
-        models.CharField(max_length=100),size=6, max_length=(1000))
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+        models.CharField(max_length=100,blank=True),size=6, max_length=(1000))
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    flg = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.date)
 
     class Meta:
         verbose_name = 'Todo'
@@ -73,7 +78,7 @@ class Todo(models.Model):
 class Diary(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     content = TextField(max_length=15000)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '日記'
@@ -92,15 +97,15 @@ class Condition(models.Model):
 class SleepAnalysis(models.Model):
     period = models.DateTimeField(auto_now_add=False)
     ave_start_time = models.DateTimeField()
-    fastest_start_time = models.DateTimeField()
-    lateest_start_time = models.DateTimeField()
-    ave_end_time = models.DateField()
-    fastest_end_time = models.DateField()
-    lateest_end_time = models.DateField()
-    ave_total_time = models.IntegerField()
-    fastest_total_time = models.IntegerField()
-    lateest_total_time = models.IntegerField()
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    fastest_start_time = models.TimeField()
+    lateest_start_time = models.TimeField()
+    ave_end_time = models.TimeField()
+    fastest_end_time = models.TimeField()
+    lateest_end_time = models.TimeField()
+    ave_total_time = models.FloatField()
+    fastest_total_time = models.FloatField()
+    lateest_total_time = models.FloatField()
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '睡眠分析'
@@ -111,7 +116,7 @@ class BreakfastAnalysis(models.Model):
     total_meal_days = models.CharField(max_length=250)
     menu_list = ListCharField(
         models.CharField(max_length=100),size=6, max_length=(1000))
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '朝食分析'
@@ -120,13 +125,13 @@ class BreakfastAnalysis(models.Model):
 class CleaningAnalysis(models.Model):
     period = models.DateTimeField(auto_now_add=False)
     total_cleaning_days = models.CharField(max_length=250)
-    total_cleaning_time = models.IntegerField()
-    ave_cleaning_time = models.IntegerField()
-    max_cleaning_time = models.IntegerField()
-    min_cleaning_time = models.IntegerField()
+    total_cleaning_time = models.FloatField()
+    ave_cleaning_time = models.FloatField()
+    max_cleaning_time = models.FloatField()
+    min_cleaning_time = models.FloatField()
     place_list = ListCharField(
         models.CharField(max_length=100),size=6, max_length=(1000))
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '掃除分析'
@@ -135,13 +140,13 @@ class CleaningAnalysis(models.Model):
 class ExerciseAnalysis(models.Model):
     period = models.DateTimeField(auto_now_add=False)
     total_exrcise_days = models.CharField(max_length=250)
-    total_exrcise_time = models.IntegerField()
-    ave_exrcise_time = models.IntegerField()
-    max_exrcise_time = models.IntegerField()
-    min_exrcise_time = models.IntegerField()
+    total_exrcise_time = models.FloatField()
+    ave_exrcise_time = models.FloatField()
+    max_exrcise_time = models.FloatField()
+    min_exrcise_time = models.FloatField()
     exercise_list = ListCharField(
         models.CharField(max_length=100),size=6, max_length=(1000))
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '運動分析'
@@ -150,14 +155,14 @@ class ExerciseAnalysis(models.Model):
 
 class TodoAnalysis(models.Model):
     period = models.DateTimeField(auto_now_add=False)
-    ave_task_progress = models.IntegerField()
-    total_task_time = models.IntegerField()
-    ave_task_time = models.IntegerField()
-    max_task_time = models.IntegerField()
-    min_task_time = models.IntegerField()
+    ave_task_progress = models.FloatField()
+    total_task_time = models.FloatField()
+    ave_task_time = models.FloatField()
+    max_task_time = models.FloatField()
+    min_task_time = models.FloatField()
     finish_task_list = ListCharField(
         models.CharField(max_length=100),size=6, max_length=(1000))
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Todo分析'
@@ -165,11 +170,11 @@ class TodoAnalysis(models.Model):
 
 class ConditionAnalysis(models.Model):
     period = models.DateTimeField(auto_now_add=False)
-    ave_condition = models.IntegerField()
+    ave_condition = models.FloatField()
     total_fine_conditon = models.IntegerField()
     total_normal_conditon = models.IntegerField()
     total_bad_conditon = models.IntegerField()
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '体調分析'
