@@ -10,7 +10,8 @@ class User(AbstractUser):
     age = models.IntegerField(null=True)
 
 class Sleep(models.Model):
-    date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     total_time = models.FloatField()
@@ -22,7 +23,8 @@ class Sleep(models.Model):
 
 class Breakfast(models.Model):
     STATUS_CHOICES = [(1, '食べてない'),(2, '食べた')]
-    date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     menu = ListCharField(
         models.CharField(max_length=100,blank=True),size=6, max_length=(1000))
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
@@ -34,7 +36,8 @@ class Breakfast(models.Model):
 
 class Cleaning(models.Model):
     STATUS_CHOICES = [(1, '掃除してない'),(2, '掃除した')]
-    date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     time = models.FloatField()
     place = ListCharField(
         models.CharField(max_length=100,blank=True),size=6, max_length=(1000))
@@ -47,7 +50,8 @@ class Cleaning(models.Model):
 
 class Exercise(models.Model):
     STATUS_CHOICES = [(1, '運動してない'),(2, '運動した')]
-    date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     time = models.FloatField()
     genre = ListCharField(
         models.CharField(max_length=100,blank=True),size=6, max_length=(1000))
@@ -60,7 +64,8 @@ class Exercise(models.Model):
 
 class Todo(models.Model):
     STATUS_CHOICES = [(1, '未'),(2, '作業中'),(3, '済')]
-    date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     task = CharField(max_length=250)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     finish_task  = ListCharField(
@@ -76,7 +81,8 @@ class Todo(models.Model):
         verbose_name_plural = 'Todo'
 
 class Diary(models.Model):
-    date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     content = TextField(max_length=15000)
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
@@ -86,7 +92,8 @@ class Diary(models.Model):
 
 class Condition(models.Model):
     STATUS_CHOICES = [(1, '調子が悪い'),(2, '普通'),(3, '調子が良い')]
-    date = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     status = models.IntegerField(choices=STATUS_CHOICES, default=2)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
 
